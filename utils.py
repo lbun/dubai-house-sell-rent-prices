@@ -21,4 +21,14 @@ def load_rent_df():
     df = pd.read_parquet("data/df_rent.parquet")
     df["year"] = df["year"].astype(str)
     df = df[df["type"].isin(["1BR", "2BR", "3BR"])]
+
     return df.drop(columns=["contract_id", "contract_reg_type_en", "property_usage_en", "tenant_type_en", "day_dt", "address", "master_project_en"])
+
+@st.cache_data
+def load_sell_df():
+    df = pd.read_parquet("data/df_sell.parquet")
+    df["year"] = df["year"].astype(str)
+    df["day_dt"] = pd.to_datetime(df["day_dt"])
+    df = df[df["type"].isin(["1BR", "2BR", "3BR"])]
+
+    return df

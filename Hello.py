@@ -15,6 +15,7 @@
 import streamlit as st
 from streamlit.logger import get_logger
 from utils import load_rent_df
+import numpy as np
 
 LOGGER = get_logger(__name__)
 
@@ -60,12 +61,16 @@ def run():
 
 
     with st.container():
-      rows_per_page = 10
+      rows_per_page = 1000
       total_pages = (len(df)-1) // rows_per_page + 1
-      page_number = st.slider("Select Page", 1, total_pages, 1)
+      # Get the current page number from the user
+      page_number = st.multiselect(label="Page Number", options=list(np.arange(1,total_pages, 1)))
+      #page_number = st.slider("Select Page", 1, total_pages, 1)
+      if not page_number:
+         page_number = [1]
 
-      start_index = (page_number - 1) * rows_per_page
-      end_index = min(page_number * rows_per_page, len(df))
+      start_index = (int(page_number[0]) - 1) * rows_per_page
+      end_index = min(int(page_number[0]) * rows_per_page, len(df))
       if selected_areas:
         df = df[df["area"].isin(selected_areas)]
       if seleceted_buildings:
