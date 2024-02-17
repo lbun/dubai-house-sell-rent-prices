@@ -12,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import inspect
-import textwrap
-
+import pandas as pd
 import streamlit as st
 
 
-def show_code(demo):
-    """Showing the code of the demo."""
-    show_code = st.sidebar.checkbox("Show code", True)
-    if show_code:
-        # Showing the code of the demo.
-        st.markdown("## Code")
-        sourcelines, _ = inspect.getsourcelines(demo)
-        st.code(textwrap.dedent("".join(sourcelines[1:])))
+@st.cache_data
+def load_rent_df():
+    df = pd.read_parquet("data/df_rent.parquet")
+    df["year"] = df["year"].astype(str)
+    df = df[df["type"].isin(["1BR", "2BR", "3BR"])]
+    return df.drop(columns=["contract_id", "contract_reg_type_en", "property_usage_en", "tenant_type_en", "day_dt", "address", "master_project_en"])

@@ -14,37 +14,69 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+from utils import load_rent_df
 
 LOGGER = get_logger(__name__)
 
 
+def filter_year(df, year):
+    return df[df["year"]==year] 
+
 def run():
     st.set_page_config(
-        page_title="Hello",
+        page_title="Home",
         page_icon="👋",
+        layout="wide",
+        initial_sidebar_state="collapsed"
     )
+    
+    df = load_rent_df()
 
-    st.write("# Insights on Dubai House prices (Buy and Rent)! 👋")
+    dubai_areas = sorted(df["area"].unique().tolist())
+    dubai_buildings = sorted(df["building_name"].unique().tolist())
+    years = sorted(df["year"].unique().tolist())[::-1]
+    builing_type = sorted(df["type"].unique().tolist())
 
-    st.sidebar.success("Select a demo above.")
+    st.write("# Insights on Dubai House prices (Buy and Rent)!")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+    st.write("### Rent Transactions. Select desired Area of Dubai, or building name, or building type (1BR, 2BR and 3BR) or specific year of interest")
+    st.write("These data are collected from Dubai open Dataset (Dubai Pulse that has also historical data)")
+    st.write("You can select the building of interest and see at what price the last contracts were signed)")
+
+
+    with st.container():
+      col1, col2, col3, col4 = st.columns(4)
+      with col1:
+        selected_areas = st.multiselect(label="Area", options=dubai_areas)
+      with col2:
+        seleceted_buildings = st.multiselect(label="Building Name", options=dubai_buildings)
+      with col3:
+        seleceted_building_type = st.multiselect(label="Building Type", options=builing_type)
+      with col4:
+        seleceted_years = st.multiselect(label="Year", options=years)
+
+
+    st.sidebar.success("Select page here.")
+
+
+    with st.container():
+      rows_per_page = 10
+      total_pages = (len(df)-1) // rows_per_page + 1
+      page_number = st.slider("Select Page", 1, total_pages, 1)
+
+      start_index = (page_number - 1) * rows_per_page
+      end_index = min(page_number * rows_per_page, len(df))
+      if selected_areas:
+        df = df[df["area"].isin(selected_areas)]
+      if seleceted_buildings:
+        df = df[df["building_name"].isin(seleceted_buildings)]
+      if seleceted_years:
+          df = df[df["year"].isin(seleceted_years)]
+      if seleceted_building_type:
+          df = df[df["type"].isin(seleceted_building_type)]
+      st.dataframe(
+          df.iloc[start_index:end_index]
+      )
 
 
 if __name__ == "__main__":
