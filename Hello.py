@@ -24,7 +24,7 @@ def run():
         page_icon="👋",
     )
 
-    st.write("# Welcome to Streamlit! 👋")
+    st.write("# Insights on Dubai House prices (Buy and Rent)! 👋")
 
     st.sidebar.success("Select a demo above.")
 
