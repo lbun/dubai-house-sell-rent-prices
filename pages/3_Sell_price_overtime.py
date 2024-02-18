@@ -10,7 +10,6 @@ def rent_price_overtime():
         layout="wide"
     )
     df = load_sell_df()
-    st.write(df.columns, df.shape)
     dubai_areas = sorted(df["area"].unique().tolist())
     dubai_buildings = sorted(df["building_name"].unique().tolist())
     years = sorted(df["year"].unique().tolist())[::-1]

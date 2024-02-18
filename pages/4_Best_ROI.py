@@ -1,6 +1,6 @@
 import numpy as np
 import streamlit as st
-from utils import load_rent_df, load_sell_df, calculate_roi
+from utils import load_rent_df, load_sell_df, calculate_roi, calculate_roi_by
 import plotly.express as px
 
 def display_page():
@@ -46,6 +46,8 @@ def display_page():
         df_sell = df_sell[df_sell["type"].isin(seleceted_building_type)]
 
     group_all = calculate_roi(df_rent=df_rent, df_sell=df_sell)
+    df_roy_by_area = calculate_roi_by(group_all, by_col="area")
+    df_roy_by_building = calculate_roi_by(group_all, by_col="building_name")
 
     # Create a histogram with Plotly Express
     fig = px.histogram(group_all[group_all["roi_years"] < 20], x="roi_years", nbins=20, title="Distribution of ROI Years")
@@ -53,6 +55,91 @@ def display_page():
     # Customize figure size
     fig.update_layout(width=1200, height=400)
     st.plotly_chart(fig)
+    st.write("Summary data by Area")
+    st.data_editor(
+    df_roy_by_area,
+    column_config={
+        "num_sell_contracts_list": st.column_config.BarChartColumn(
+            "trend number of sales by year",
+            help="The number of sales by year for area",
+            y_min=0,
+            y_max=str(df_roy_by_area["num_sell_contracts_list"].apply(lambda x: max(x)).max()),
+        ),
+        "num_rent_contracts_list": st.column_config.BarChartColumn(
+            "Trend number of contracts by year",
+            help="The number of contracts by year for area",
+            y_min=0,
+            y_max=str(df_roy_by_area["num_rent_contracts_list"].apply(lambda x: max(x)).max()),
+        ),
+            "median_sale_price_list": st.column_config.LineChartColumn(
+            "Trend Sale Price year",
+            width="medium",
+            help="Median of sale price by year",
+            y_min=0,
+            y_max=df_roy_by_building["median_sale_price_list"].apply(lambda x: max(x)).quantile(0.75),
+         ),
+         "median_rent_price_list": st.column_config.LineChartColumn(
+            "Trend rent price by year",
+            width="medium",
+            help="Median of rent price by year",
+            y_min=0,
+            y_max=df_roy_by_building["median_rent_price_list"].apply(lambda x: max(x)).quantile(0.75),
+         ),
+        "roi_median_list": st.column_config.LineChartColumn(
+            "Trend median roi by year",
+            width="medium",
+            help="The median roi by year",
+            y_min=0,
+            y_max=20,
+         ),
+    },
+
+
+    hide_index=True,
+    )
+    st.write("Summary data by Building")
+    st.data_editor(
+    df_roy_by_building,
+    column_config={
+        "num_sell_contracts_list": st.column_config.BarChartColumn(
+            "trend number of sales by year",
+            help="The number of sales by year for area",
+            y_min=0,
+            y_max=str(df_roy_by_building["num_sell_contracts_list"].apply(lambda x: max(x)).max()),
+        ),
+        "num_rent_contracts_list": st.column_config.BarChartColumn(
+            "Trend number of contracts by year",
+            help="The number of contracts by year for area",
+            y_min=0,
+            y_max=str(df_roy_by_building["num_rent_contracts_list"].apply(lambda x: max(x)).max()),
+        ),
+        "median_sale_price_list": st.column_config.LineChartColumn(
+            "Trend Sale Price year",
+            width="medium",
+            help="Median of sale price by year",
+            y_min=0,
+            y_max=df_roy_by_building["median_sale_price_list"].apply(lambda x: max(x)).quantile(0.75),
+         ),
+         "median_rent_price_list": st.column_config.LineChartColumn(
+            "Trend rent price by year",
+            width="medium",
+            help="Median of rent price by year",
+            y_min=0,
+            y_max=df_roy_by_building["median_rent_price_list"].apply(lambda x: max(x)).quantile(0.75),
+         ),
+        "roi_median_list": st.column_config.LineChartColumn(
+            "Trend median roi by year",
+            width="medium",
+            help="The median roi by year",
+            y_min=0,
+            y_max=20,
+         ),
+    },
+
+
+    hide_index=True,
+    )
+
 
     st.dataframe(group_all)
 

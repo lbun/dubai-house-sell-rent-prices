@@ -1,20 +1,6 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pandas as pd
 import streamlit as st
-
+import datetime
 
 @st.cache_data
 def load_rent_df():
@@ -43,13 +29,45 @@ def calculate_roi(df_rent, df_sell):
     df_sell_filtered = df_sell[df_sell["address"].isin(common_addresses)].copy()
     df_sell_filtered["address_year"] = df_sell_filtered["address"] + "_" + df_sell_filtered["year"].astype(str)
     # Creating groupby for rent
-    group_rent = df_rent_filtered.groupby(["area", "building_name", "address", "year", "address_year"]).agg({"annual_amount":"median", "price_meter":"count"})\
-        .reset_index().rename(columns={"price_meter": "num_rent_contracts"})
+    group_rent = df_rent_filtered.groupby(["area", "building_name", "address", "year", "address_year"])\
+        .agg(num_rent_contracts=("price_meter", "count"), annual_amount=("annual_amount", "median")).reset_index()
     # Creating groupby for sell
-    group_sell = df_sell_filtered.groupby(["address_year"]).agg({"actual_worth":"median", "year":"count"})\
-        .reset_index().rename(columns={"year": "num_sales", "actual_worth": "median_sale_price"})
+    group_sell = df_sell_filtered.groupby(["address_year"]).agg(median_sale_price=("actual_worth", "median"), num_sales=("year", "count")).reset_index()
     # Merging the 2 groups
     group_all = group_rent.merge(group_sell, on="address_year", how="left")
     group_all.dropna(subset=["median_sale_price", "num_sales"], inplace=True)
     group_all["roi_years"] = group_all["median_sale_price"]/group_all["annual_amount"]
     return group_all.sort_values("roi_years", ascending=True)
+
+@st.cache_data
+def calculate_roi_by(df_roi, by_col="area"):
+    # Group by 'year' and 'area' and calculate count and median
+    df_roi.sort_values([by_col, "year"], ascending=True, inplace=True)
+    grouped_df = df_roi.groupby([by_col, 'year']).agg(
+        num_rent_contracts=('num_rent_contracts', 'sum'),
+        num_sales=('num_sales', 'sum'), 
+        median_sale_price=('median_sale_price', 'median'),
+        median_rent_price=('annual_amount', 'median'),
+        roi_median=('roi_years', 'median')
+        ).reset_index()
+
+    # Group by 'area' and create a new DataFrame with lists of values
+    result_df = grouped_df.groupby(by_col).agg(
+        num_rent_contracts_list=('num_rent_contracts', list), 
+        num_sell_contracts_list=('num_sales', list), 
+        median_sale_price_list=('median_sale_price', list),
+        median_rent_price_list=('median_rent_price', list),
+        roi_median_list=('roi_median', list)
+        ).reset_index()
+    result_df['num_rent_contracts_list'] = result_df['num_rent_contracts_list'].apply(lambda x: [int(num) for num in x])
+    result_df['num_sell_contracts_list'] = result_df['num_sell_contracts_list'].apply(lambda x: [int(num) for num in x])
+    return result_df
+
+if __name__=="__main__":
+    df_rent = load_rent_df()
+    df_sell = load_sell_df()
+    group_all = calculate_roi(df_rent, df_sell)
+
+    df_roy_by_area = calculate_roi_by(group_all, by_col="area")
+    df_roy_by_building = calculate_roi_by(group_all, by_col="building_name")
+    print("finished")
