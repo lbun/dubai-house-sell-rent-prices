@@ -16,11 +16,10 @@ def rent_price_overtime():
     years = sorted(df["year"].unique().tolist())[::-1]
     builing_type = sorted(df["type"].unique().tolist())
 
-    st.write("# Insights on Dubai House prices (Buy and Rent)!")
+    st.write("# Rent Price")
 
-    st.write("### Rent Transactions. Select desired Area of Dubai, or building name, or building type (1BR, 2BR and 3BR) or specific year of interest")
+    st.write("### Select desired Area of Dubai, or building name, or building type (1BR, 2BR and 3BR) or specific year of interest")
     st.write("These data are collected from Dubai open Dataset (Dubai Pulse that has also historical data)")
-    st.write("You can select the building of interest and see at what price the last contracts were signed)")
 
 
     with st.container():
