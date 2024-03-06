@@ -45,7 +45,7 @@ def rent_price_overtime():
     months_list = []
     today = datetime.datetime.now()
     for i in range(1,25):
-        year_month = (datetime.datetime(today.year, today.month, 1) - datetime.timedelta(30*i)).strftime("%Y-%m")
+        year_month = (datetime.datetime(today.year, today.month, 1) - datetime.timedelta(20*i)).strftime("%Y-%m")
         months_list.append(year_month)
     # plotting only last year data
     df["year_month"] = df["year_month"].astype(str)
