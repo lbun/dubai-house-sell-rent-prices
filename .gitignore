@@ -1,2 +1,8 @@
 dubaiEnv
 __pycache__/utils.cpython-39.pyc
+data_preprocessing/data/Rent_Contracts.csv
+data_preprocessing/data/Transactions.csv
+.DS_Store
+.gitignore
+data_preprocessing/data/Rent_Contracts.parquet
+data_preprocessing/data/Transactions.parquet
