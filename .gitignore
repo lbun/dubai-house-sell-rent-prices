@@ -6,3 +6,5 @@ data_preprocessing/data/Transactions.csv
 .gitignore
 data_preprocessing/data/Rent_Contracts.parquet
 data_preprocessing/data/Transactions.parquet
+notebooks
+data/.ipynb_checkpoints/EDA_transactions_pulse-checkpoint.ipynb
