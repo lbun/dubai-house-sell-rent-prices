@@ -8,3 +8,8 @@ data_preprocessing/data/Rent_Contracts.parquet
 data_preprocessing/data/Transactions.parquet
 notebooks
 data/.ipynb_checkpoints/EDA_transactions_pulse-checkpoint.ipynb
+.ipynb_checkpoints/README-checkpoint.md
+dubai_housing.duckdb
+**/*.pyc
+**/*.parquet
+**/*.ipynb
