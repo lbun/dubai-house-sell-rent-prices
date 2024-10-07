@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Streamlit Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${file}",
+                "--server.runOnSave=true"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "STREAMLIT_DEBUG": "1"
+            }
+        }
+    ]
+}

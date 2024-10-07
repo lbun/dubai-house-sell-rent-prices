@@ -21,7 +21,8 @@ with sales_contracts as (
         master_project_en, -- area of Dubai
         annual_amount
     from {{ source('dubai_housing', 'rent_contracts') }}
-    where project_name_en is not null and property_usage_en = 'Residential' and tenant_type_en = 'Person' and 
+    where strftime(contract_start_date, '%Y%m') < strftime(current_timestamp, '%Y%m') and project_name_en is not null and property_usage_en = 'Residential' 
+    and tenant_type_en = 'Person' and 
     master_project_en is not null and ejari_property_sub_type_id in 
 	('11', '1', '2', '3') --, '4', '5', '6', '7', '8', '9', '35', '170501486', ) 
 )

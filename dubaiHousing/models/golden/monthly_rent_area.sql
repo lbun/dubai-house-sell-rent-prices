@@ -26,7 +26,6 @@ select
     END) AS renew_contracts,
     median(annual_amount) as median_month_amount
 from {{ ref('rent_projects') }} 
-where year_month < strftime(current_timestamp, '%Y%m') --and area_name_en = 'Marsa Dubai' and ejari_property_sub_type_en = 'Studio'
 group by area_id, area_name_en, ejari_property_sub_type_en, year_month, year, month
 ),
 rolling as (

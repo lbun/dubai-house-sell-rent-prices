@@ -1,0 +1,28 @@
+
+version: 2
+
+sources:
+  - name: dubai_housing         
+    schema: main               
+    tables:
+      - name: rent_contracts    
+      - name: sale_contracts 
+
+models:
+  - name: rents
+    description: "Rent Contracts Dubai - Only Studio, 1BR, 2BR, 3BR"
+    columns:
+      - name: contract_id
+        description: "The primary key for this table"
+        data_tests:
+          - unique
+          - not_null
+
+  - name: sales
+    description: "Sales Contract Dubai"
+    columns:
+      - name: transaction_id
+        description: "The primary key for this table"
+        data_tests:
+          - unique
+          - not_null

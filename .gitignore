@@ -13,3 +13,6 @@ dubai_housing.duckdb
 **/*.pyc
 **/*.parquet
 **/*.ipynb
+duck**
+.gitkeep
+data/df_rent.parquet

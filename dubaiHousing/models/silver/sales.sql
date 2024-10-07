@@ -21,6 +21,7 @@ with sales_contracts as (
         area_id,
         nearest_landmark_en
     from {{ source('dubai_housing', 'sale_contracts')}}
+    where strftime(instance_date, '%Y%m') < strftime(current_timestamp, '%Y%m')
 )
 
 select *

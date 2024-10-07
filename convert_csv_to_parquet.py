@@ -10,7 +10,7 @@ def remove_file(file_name):
     else:
         print("The file does not exist")
 
-duckCon = DuckClient().get_client()
+duckCon = DuckClient(db_name="/Users/luigibungaro/personal/dubai-house-sell-rent-prices/dubai_housing.duckdb").get_client()
 
 # OLD METHOD
 # def build_path_csv(file_name):
@@ -27,13 +27,15 @@ duckCon = DuckClient().get_client()
 #     print(f"File {parquet_file} created")
 
 if __name__ == "__main__":
+    duckCon.execute(f"DROP TABLE IF EXISTS rent_contracts;")
     duckCon.execute(f"CREATE TABLE rent_contracts AS SELECT * FROM read_csv_auto('{file_path_rent_csv}', sample_size = -1);")
     duckCon.execute(f"COPY (select * from rent_contracts) to '{file_path_rent_parquet}';")
 
+    duckCon.execute(f"DROP TABLE IF EXISTS sale_contracts;")
     duckCon.execute(f"CREATE TABLE sale_contracts AS SELECT * FROM read_csv_auto('{file_path_sell_csv}', sample_size = -1);")
     duckCon.execute(f"COPY (select * from sale_contracts) to '{file_path_sell_parquet}';")
 
-    remove_file(file_path_rent_csv)
-    remove_file(file_path_sell_csv)
+    # remove_file(file_path_rent_csv)
+    # remove_file(file_path_sell_csv)
     # convert_cvs_to_parquet(file_path_rent)
     # convert_cvs_to_parquet(file_path_sell)

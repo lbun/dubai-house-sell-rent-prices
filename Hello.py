@@ -1,10 +1,12 @@
 import streamlit as st
 from streamlit.logger import get_logger
 import numpy as np
+from config import duckdb_path
+from utils_duckdb import DuckClient
+
+duckCon = DuckClient(db_name=duckdb_path).get_client()
 
 LOGGER = get_logger(__name__)
-
-
 
 def run():
     st.set_page_config(
